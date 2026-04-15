@@ -585,22 +585,24 @@
                     submitBtn.innerText = 'Transmitting...';
                     submitBtn.disabled = true;
 
-                    // Use the native form element directly
-                    const data = new FormData(contactForm);
-
                     try {
-                        const scriptURL = 'https://script.google.com/macros/s/AKfycbxCcf4IkdYgHtMzKdxxtwfS59d8OAOmh0HI7E7PdSqStX5BZgNO3LIwL4E_3QwlNR1oyw/exec';
+                        // 1. Define the URL FIRST so the fetch knows where to go
+                        const scriptURL = 'https://script.google.com/macros/s/AKfycbzOCMqtNTC3vmqd1P0sBFdRATGmLk51-xkGmuwUlkFF-Q9kCxJDHUJb5i09Rjjcy0TboQ/exec';
 
-                        // Removed 'headers' to allow browser to handle the boundary automatically
-                        // This prevents many CORS and "Transmission failed" errors
-                        const response = await fetch(scriptURL, {
+                        // 2. Package the data natively
+                        const data = new FormData(contactForm);
+                        
+                        // 3. Append your security key so Google allows it through
+                        data.append('key', '8das&Y*SDd!Fd');
+
+                        // 4. Send the single, clean request
+                        await fetch(scriptURL, {
                             method: 'POST',
-                            mode: 'no-cors', // Tells the browser to send the data without a strict CORS check
+                            mode: 'no-cors', 
                             body: data
                         });
 
-                        // Note: with 'no-cors', the response type is "opaque", 
-                        // so we assume success if the fetch doesn't throw an error.
+                        // 5. Fire the success UI
                         document.getElementById('contact-form-container').classList.add('hidden');
                         document.getElementById('success-message').classList.remove('hidden');
 
@@ -612,6 +614,7 @@
                     }
                 });
             }
+            
             // Mobile Menu Toggle logic
             const mobileMenuBtn = document.getElementById('mobile-menu-btn');
             const mobileMenu = document.getElementById('mobile-menu');
